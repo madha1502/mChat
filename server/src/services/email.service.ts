@@ -18,14 +18,23 @@ export class EmailService {
 
       console.log(`[SMTP] Creating transporter for user: ${user}`);
 
-      // Always use Gmail service for @gmail.com accounts — this handles auth correctly
+      // Use explicit host + port + family:4 to force IPv4
+      // Render free tier does NOT support IPv6 outbound — gmail service shorthand resolves IPv6
       this.transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,           // SSL on port 465 (avoids STARTTLS IPv6 issue)
         auth: {
           user,
           pass,
         },
-      });
+        tls: {
+          rejectUnauthorized: false,
+        },
+        // Force IPv4 — Render free tier does not support IPv6 outbound TCP
+        // @ts-ignore - 'family' is a valid net.Socket option passed through to the underlying socket
+        family: 4,
+      } as any);
     }
     return this.transporter;
   }
