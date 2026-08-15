@@ -54,7 +54,7 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <h1 className="text-base font-black text-slate-800 tracking-tight truncate flex items-center gap-1">
-              Love Bubble
+              mChat
               <Sparkles className="w-3.5 h-3.5 text-pink-500" />
             </h1>
           </div>

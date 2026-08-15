@@ -70,7 +70,7 @@ export const App: React.FC = () => {
             <Heart className="w-7 h-7 fill-white" />
           </div>
           <p className="text-xs font-bold text-pink-500 tracking-wider uppercase animate-pulse">
-            Loading Love Bubble... 💖
+            Loading mChat... 💖
           </p>
         </div>
       </div>
@@ -144,7 +144,7 @@ export const App: React.FC = () => {
 
               <div className="space-y-2 max-w-sm">
                 <h2 className="text-2xl font-black text-slate-800 tracking-tight flex items-center justify-center gap-2">
-                  Love Bubble
+                  mChat
                   <Heart className="w-6 h-6 fill-pink-500 text-pink-500" />
                 </h2>
                 <p className="text-xs text-slate-500 font-medium leading-relaxed">

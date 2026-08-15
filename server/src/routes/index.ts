@@ -35,7 +35,7 @@ router.get('/health', (_req, res) => {
     status: 'ok',
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
-    service: 'Aether Unified Messenger API',
+    service: 'mChat API',
     database: {
       status: dbStateMap[stateCode] || 'unknown',
       connected: isConnected,

@@ -66,7 +66,7 @@ const startServer = async () => {
 
   server.listen(config.port, () => {
     console.log(`=======================================================`);
-    console.log(`🚀 Aether Unified Messenger Server is running`);
+    console.log(`🚀 mChat Server is running`);
     console.log(`🌐 URL: http://localhost:${config.port}`);
     console.log(`🔌 WebSockets: Ready`);
     console.log(`📁 Uploads Directory: ${uploadsPath}`);

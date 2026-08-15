@@ -47,16 +47,16 @@ export class EmailService {
   }): Promise<boolean> {
     const subject =
       purpose === 'register'
-        ? `🌸 Welcome to Love Bubble — Your Verification Code is ${otp}`
-        : `💖 Love Bubble Login Verification Code: ${otp}`;
+        ? `🌸 Welcome to mChat — Your Verification Code is ${otp}`
+        : `💖 mChat Login Verification Code: ${otp}`;
 
     const heading =
       purpose === 'register' ? 'Verify Your Account' : 'Confirm Your Sign In';
 
     const messageText =
       purpose === 'register'
-        ? `Welcome to Love Bubble! Use the 6-digit code below to verify your Gmail address and complete your registration.`
-        : `We received a request to sign in to your Love Bubble account. Enter the 6-digit verification code below to continue.`;
+        ? `Welcome to mChat! Use the 6-digit code below to verify your Gmail address and complete your registration.`
+        : `We received a request to sign in to your mChat account. Enter the 6-digit verification code below to continue.`;
 
     const html = `
       <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 28px; background: #FFF8FA; border-radius: 28px; border: 1px solid #FFE4E9; color: #4A3E3D;">
@@ -64,7 +64,7 @@ export class EmailService {
           <div style="display: inline-block; width: 56px; height: 56px; line-height: 56px; border-radius: 28px; background: linear-gradient(135deg, #FF758C 0%, #FF7EB3 100%); color: #ffffff; font-size: 28px; box-shadow: 0 8px 20px rgba(255, 117, 140, 0.3);">
             💖
           </div>
-          <h2 style="font-size: 24px; font-weight: 800; color: #1E293B; margin: 12px 0 4px 0; letter-spacing: -0.5px;">Love Bubble</h2>
+          <h2 style="font-size: 24px; font-weight: 800; color: #1E293B; margin: 12px 0 4px 0; letter-spacing: -0.5px;">mChat</h2>
           <p style="font-size: 13px; color: #FF758C; font-weight: 600; margin: 0;">Cute Animated Real-Time Messenger</p>
         </div>
 
@@ -87,13 +87,13 @@ export class EmailService {
 
         <div style="text-align: center; margin-top: 24px; font-size: 11px; color: #A89F9E;">
           <p style="margin: 0 0 6px 0;">If you did not request this verification code, you can safely ignore this email.</p>
-          <p style="margin: 0; font-weight: 600;">© ${new Date().getFullYear()} Love Bubble Messenger · Real-Time Communication</p>
+          <p style="margin: 0; font-weight: 600;">© ${new Date().getFullYear()} mChat Messenger · Real-Time Communication</p>
         </div>
       </div>
     `;
 
     console.log('\n=======================================================');
-    console.log(`📧 [Love Bubble OTP Code] Sending to: ${email}`);
+    console.log(`📧 [mChat OTP Code] Sending to: ${email}`);
     console.log(`🔑 OTP Code: [ ${otp} ] (Purpose: ${purpose.toUpperCase()})`);
     console.log('=======================================================\n');
 

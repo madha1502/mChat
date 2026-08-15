@@ -46,7 +46,7 @@ export const AuthModal: React.FC = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [signUpPassword, setSignUpPassword] = useState('');
-  const [about, setAbout] = useState('Hey there! I am using Love Bubble 💖');
+  const [about, setAbout] = useState('Hey there! I am using mChat 💖');
   const [profilePicture, setProfilePicture] = useState('');
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
@@ -294,7 +294,7 @@ export const AuthModal: React.FC = () => {
                 <Heart className="w-8 h-8 fill-white" />
               </div>
               <h2 className="text-2xl font-black text-slate-800 tracking-tight flex items-center justify-center gap-1.5">
-                Love Bubble
+                mChat
                 <Sparkles className="w-5 h-5 text-pink-500" />
               </h2>
               <p className="text-xs text-pink-400 font-semibold max-w-xs mx-auto">
@@ -389,7 +389,7 @@ export const AuthModal: React.FC = () => {
                   disabled={isLoading}
                   className="w-full py-3.5 bg-gradient-to-r from-[#FF758C] to-[#FF7EB3] text-white font-bold text-xs rounded-full shadow-lg shadow-pink-500/25 hover:scale-102 active:scale-98 transition-all disabled:opacity-50"
                 >
-                  {isLoading ? 'Sending Verification Code... ✨' : 'Sign In to Love Bubble 💖'}
+                  {isLoading ? 'Sending Verification Code... ✨' : 'Sign In to mChat 💖'}
                 </button>
               </form>
             )}

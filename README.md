@@ -1,4 +1,4 @@
-# Aether Unified Messenger
+# mChat — Real-Time Messenger
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.0-61DAFB.svg)](https://reactjs.org/)
@@ -7,7 +7,7 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-green.svg)](https://www.mongodb.com/)
 [![Meta WhatsApp API](https://img.shields.io/badge/Meta%20WhatsApp-Official%20Cloud%20API-25D366.svg)](https://developers.facebook.com/docs/whatsapp/cloud-api)
 
-A complete, production-oriented **Unified Real-Time Messaging Platform** with **Google/Gmail Authentication**, **Instant Socket.IO WebSockets Messaging**, **WebRTC Peer-to-Peer Audio/Video Calling & Screen Sharing**, **24h Stories/Status**, **Group Administration**, and **Official Meta WhatsApp Business Cloud Platform Integration**.
+A complete, cute and modern **Unified Real-Time Messaging Platform** with **Gmail 6-Digit OTP 2FA**, **Instant Socket.IO WebSockets Messaging**, **WebRTC Peer-to-Peer Audio/Video Calling & Screen Sharing**, **24h Stories/Status**, **Group Administration**, and **Official Meta WhatsApp Business Cloud Platform Integration**.
 
 ---
 
