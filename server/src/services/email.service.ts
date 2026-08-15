@@ -3,36 +3,51 @@ import { config } from '../config/env.js';
 
 export class EmailService {
   private static transporter: nodemailer.Transporter | null = null;
+  private static transporterVerified = false;
 
-  private static getTransporter(): nodemailer.Transporter | null {
+  private static getTransporter(): nodemailer.Transporter {
     if (!this.transporter) {
-      if (config.smtp.user && config.smtp.pass) {
-        if (config.smtp.host === 'smtp.gmail.com' || config.smtp.user.includes('@gmail.com')) {
-          this.transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              user: config.smtp.user,
-              pass: config.smtp.pass,
-            },
-          });
-        } else {
-          this.transporter = nodemailer.createTransport({
-            host: config.smtp.host,
-            port: config.smtp.port,
-            secure: config.smtp.port === 465,
-            auth: {
-              user: config.smtp.user,
-              pass: config.smtp.pass,
-            },
-          });
-        }
+      const { user, pass } = config.smtp;
+
+      if (!user || !pass) {
+        throw new Error(
+          '[SMTP] SMTP_USER and SMTP_PASS environment variables are not set. ' +
+          'Please add them in your Render Dashboard under Environment Variables.'
+        );
       }
+
+      console.log(`[SMTP] Creating transporter for user: ${user}`);
+
+      // Always use Gmail service for @gmail.com accounts — this handles auth correctly
+      this.transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user,
+          pass,
+        },
+      });
     }
     return this.transporter;
   }
 
   /**
-   * Sends a styled Love Bubble 6-digit OTP verification email to the user's Gmail
+   * Verifies SMTP connection — call on startup to catch misconfig early
+   */
+  static async verifyConnection(): Promise<void> {
+    if (this.transporterVerified) return;
+    try {
+      const t = this.getTransporter();
+      await t.verify();
+      this.transporterVerified = true;
+      console.log('[SMTP] ✅ SMTP connection verified successfully.');
+    } catch (err: any) {
+      console.error('[SMTP] ❌ SMTP connection failed:', err.message);
+      // Don't throw here so the server still starts — but mail will fail later
+    }
+  }
+
+  /**
+   * Sends a styled mChat 6-digit OTP verification email to the user's Gmail
    */
   static async sendOtpEmail({
     email,
@@ -55,7 +70,7 @@ export class EmailService {
 
     const messageText =
       purpose === 'register'
-        ? `Welcome to mChat! Use the 6-digit code below to verify your Gmail address and complete your registration.`
+        ? `Welcome to mChat! Use the 6-digit code below to verify your email address and complete your registration.`
         : `We received a request to sign in to your mChat account. Enter the 6-digit verification code below to continue.`;
 
     const html = `
@@ -97,23 +112,20 @@ export class EmailService {
     console.log(`🔑 OTP Code: [ ${otp} ] (Purpose: ${purpose.toUpperCase()})`);
     console.log('=======================================================\n');
 
-    const transporter = this.getTransporter();
-    if (transporter) {
-      try {
-        await transporter.sendMail({
-          from: config.smtp.from,
-          to: email,
-          subject,
-          html,
-        });
-        console.log(`[SMTP] ✅ Successfully delivered OTP email to ${email}`);
-        return true;
-      } catch (err: any) {
-        console.warn(`[SMTP Warning] Could not send via SMTP (${err.message}). Code is logged above for testing.`);
-        return true;
-      }
+    try {
+      const transporter = this.getTransporter();
+      await transporter.sendMail({
+        from: config.smtp.from,
+        to: email,
+        subject,
+        html,
+      });
+      console.log(`[SMTP] ✅ Successfully delivered OTP email to ${email}`);
+      return true;
+    } catch (err: any) {
+      console.error(`[SMTP] ❌ Failed to send OTP email to ${email}:`, err.message);
+      // Re-throw so the API returns a proper 500 error and the user sees something went wrong
+      throw new Error(`Email delivery failed: ${err.message}`);
     }
-
-    return true;
   }
 }

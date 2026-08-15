@@ -10,6 +10,7 @@ import { initializeSocket } from './sockets/index.js';
 import routes from './routes/index.js';
 import { errorHandler } from './middleware/error.middleware.js';
 import { apiLimiter } from './middleware/rateLimiter.middleware.js';
+import { EmailService } from './services/email.service.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -64,11 +65,15 @@ initializeSocket(server);
 const startServer = async () => {
   await connectDatabase();
 
+  // Verify SMTP connection on startup so misconfiguration is caught early in logs
+  await EmailService.verifyConnection();
+
   server.listen(config.port, () => {
     console.log(`=======================================================`);
     console.log(`🚀 mChat Server is running`);
     console.log(`🌐 URL: http://localhost:${config.port}`);
     console.log(`🔌 WebSockets: Ready`);
+    console.log(`📧 Email SMTP: ${config.smtp.user || 'NOT CONFIGURED'}`);
     console.log(`📁 Uploads Directory: ${uploadsPath}`);
     console.log(`💬 Meta WhatsApp Business Webhook: http://localhost:${config.port}/api/integrations/whatsapp/webhook`);
     console.log(`=======================================================`);
