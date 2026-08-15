@@ -15,6 +15,9 @@ import { EmailService } from './services/email.service.js';
 const app = express();
 const server = http.createServer(app);
 
+// Trust Render/Vercel/Heroku reverse proxy — required for rate-limiting and IP detection
+app.set('trust proxy', 1);
+
 // Security Headers
 app.use(
   helmet({
