@@ -45,6 +45,23 @@ export const errorHandler = (
   // Log unexpected internal errors
   console.error('[Unhandled Error]', err);
 
+  // For email-related errors, expose a user-friendly message
+  const isEmailError = err.message && (
+    err.message.includes('Email delivery failed') ||
+    err.message.includes('SMTP') ||
+    err.message.includes('sendMail') ||
+    err.message.includes('auth credentials') ||
+    err.message.includes('Invalid login')
+  );
+
+  if (isEmailError) {
+    res.status(503).json({
+      success: false,
+      message: 'Email service is temporarily unavailable. Please try again later or contact support.',
+    });
+    return;
+  }
+
   res.status(500).json({
     success: false,
     message: config.env === 'production' ? 'Internal server error' : err.message || 'Internal server error',
