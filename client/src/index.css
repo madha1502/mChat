@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Quicksand', 'Nunito', 'Plus Jakarta Sans', sans-serif;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 100vh;
+  }
+
+  /* Cute pastel scrollbars */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(244, 114, 182, 0.25);
+    border-radius: 9999px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(244, 114, 182, 0.5);
+  }
+}
+
+/* Love Bubble Glassmorphism */
+.bubble-glass {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 20px 45px -10px rgba(244, 114, 182, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+.bubble-card {
+  background: #FFFFFF;
+  box-shadow: 0 25px 50px -12px rgba(255, 117, 140, 0.25), 0 0 0 1px rgba(255, 240, 245, 0.8);
+}
+
+.bubble-header {
+  background: linear-gradient(135deg, #FF758C 0%, #FF7EB3 100%);
+}
+
+.bubble-outgoing {
+  background: linear-gradient(135deg, #FF758C 0%, #FFA2B3 100%);
+  box-shadow: 0 6px 18px rgba(255, 117, 140, 0.28);
+}
+
+.bubble-incoming {
+  background: #FFFFFF;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(255, 240, 245, 0.8);
+}
+
+/* Floating Hearts Keyframes */
+@keyframes float-heart {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.6;
+  }
+  80% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-120vh) rotate(360deg) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes gentle-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes heart-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+.animate-float-heart {
+  animation: float-heart linear infinite;
+}
+
+.animate-gentle-bounce {
+  animation: gentle-bounce 3s ease-in-out infinite;
+}
+
+.animate-heart-pulse {
+  animation: heart-pulse 1.8s ease-in-out infinite;
+}

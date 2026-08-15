@@ -1,0 +1,17 @@
+{
+  "name": "aether-unified-messenger",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-grade unified real-time messenger with Google Auth & Meta WhatsApp Business Platform integration",
+  "scripts": {
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build:server": "npm --prefix server run build",
+    "build:client": "npm --prefix client run build",
+    "build": "npm run build:server && npm run build:client",
+    "test": "npm --prefix server test"
+  },
+  "keywords": ["real-time", "socket.io", "webrtc", "whatsapp-business", "react", "nodejs", "mongodb"],
+  "author": "",
+  "license": "ISC"
+}
