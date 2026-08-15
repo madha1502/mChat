@@ -15,9 +15,11 @@ interface ChatState {
   searchQuery: string;
   typingUsers: Record<string, { userId: string; name: string }[]>;
   replyingTo: IMessage | null;
+  onlineUsersCount: number;
 
   // Actions
   setIsConnected: (connected: boolean) => void;
+  setOnlineUsersCount: (count: number) => void;
   setFilter: (filter: 'all' | 'unread' | 'groups' | 'whatsapp') => void;
   setSearchQuery: (query: string) => void;
   setReplyingTo: (msg: IMessage | null) => void;
@@ -70,8 +72,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
   searchQuery: '',
   typingUsers: {},
   replyingTo: null,
+  onlineUsersCount: 1,
 
   setIsConnected: (connected: boolean) => set({ isConnected: connected }),
+  setOnlineUsersCount: (onlineUsersCount: number) => set({ onlineUsersCount }),
   setFilter: (filter) => set({ filter }),
   setSearchQuery: (searchQuery) => set({ searchQuery }),
   setReplyingTo: (replyingTo) => set({ replyingTo }),

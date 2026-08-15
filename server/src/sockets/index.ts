@@ -81,6 +81,9 @@ export const initializeSocket = (httpServer: HttpServer): Server => {
 
     console.log(`[Socket.IO] User connected: ${user.name} (${userId}) - Socket: ${socket.id}`);
 
+    // Broadcast updated online count to all connected users
+    io.emit('online_count_update', { count: userSockets.size });
+
     // Register modular domain handlers
     registerPresenceHandlers(io, socket);
     registerMessageHandlers(io, socket);
@@ -110,6 +113,8 @@ export const initializeSocket = (httpServer: HttpServer): Server => {
           userSockets.delete(userId);
         }
       }
+      // Broadcast updated online count on disconnect
+      io.emit('online_count_update', { count: userSockets.size });
     });
   });
 

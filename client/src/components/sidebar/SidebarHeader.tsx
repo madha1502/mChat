@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuthStore } from '../../stores/authStore';
 import { useStatusStore } from '../../stores/statusStore';
 import { useWhatsAppStore } from '../../stores/whatsappStore';
+import { useChatStore } from '../../stores/chatStore';
 import { Avatar } from '../common/Avatar';
 import {
   MessageSquarePlus,
@@ -26,22 +27,19 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({
 }) => {
   const { user } = useAuthStore();
   const { openCreate, statusGroups } = useStatusStore();
+  const { onlineUsersCount } = useChatStore();
   const { openSimulator } = useWhatsAppStore();
 
   const hasStories = (statusGroups || []).length > 0;
 
   return (
-    <div className="flex items-center justify-between px-5 py-4 bg-white/90 backdrop-blur-md border-b border-pink-100 select-none">
-      {/* User Profile & Stories trigger */}
-      <div className="flex items-center gap-3">
-        <div
-          onClick={openCreate}
-          className="relative cursor-pointer group"
-          title="Post a 24h Story"
-        >
+    <header className="p-4 bg-white/90 border-b border-pink-100/90 flex items-center justify-between gap-3 select-none">
+      {/* Current User Profile Info */}
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="relative group cursor-pointer" onClick={onOpenSettings}>
           <Avatar
             src={user?.profilePicture}
-            name={user?.name || 'You'}
+            name={user?.name || 'User'}
             size="md"
             isOnline={user?.isOnline}
             className={`ring-2 ${hasStories ? 'ring-pink-500' : 'ring-pink-200'} group-hover:scale-105 transition-transform`}
@@ -57,6 +55,10 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({
               mChat
               <Sparkles className="w-3.5 h-3.5 text-pink-500" />
             </h1>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-bold text-emerald-600 shadow-sm" title="Real-time online users count">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              {onlineUsersCount} online
+            </span>
           </div>
           <p className="text-xs text-pink-400 font-semibold truncate">
             {user?.name || 'Welcome!'}
@@ -75,11 +77,11 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({
           <CircleDashed className="w-4 h-4" />
         </button>
 
-        {/* WhatsApp Simulator */}
+        {/* WhatsApp Simulation */}
         <button
           onClick={openSimulator}
           className="p-2 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-colors"
-          title="WhatsApp Simulator"
+          title="WhatsApp Cloud Simulator"
         >
           <MessageSquareCode className="w-4 h-4" />
         </button>
@@ -111,6 +113,6 @@ export const SidebarHeader: React.FC<SidebarHeaderProps> = ({
           <Settings className="w-4 h-4" />
         </button>
       </div>
-    </div>
+    </header>
   );
 };

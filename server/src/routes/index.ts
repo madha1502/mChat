@@ -8,6 +8,7 @@ import statusRoutes from './status.routes.js';
 import callRoutes from './call.routes.js';
 import uploadRoutes from './upload.routes.js';
 import whatsappRoutes from './whatsapp.routes.js';
+import { userSockets } from '../sockets/index.js';
 
 const router = Router();
 
@@ -20,7 +21,7 @@ router.use('/calls', callRoutes);
 router.use('/uploads', uploadRoutes);
 router.use('/integrations/whatsapp', whatsappRoutes);
 
-// Health check & database connection status endpoint
+// Health check, database connection status & live online users count
 router.get('/health', (_req, res) => {
   const dbStateMap: Record<number, string> = {
     0: 'disconnected',
@@ -36,6 +37,7 @@ router.get('/health', (_req, res) => {
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
     service: 'mChat API',
+    onlineUsers: userSockets.size,
     database: {
       status: dbStateMap[stateCode] || 'unknown',
       connected: isConnected,

@@ -44,6 +44,12 @@ export const socketService = {
       useChatStore.getState().setIsConnected(false);
     });
 
+    // Real-time online users count updates
+    socket.on('online_count_update', ({ count }: { count: number }) => {
+      console.log('[Socket.IO] Real-time online users count:', count);
+      useChatStore.getState().setOnlineUsersCount(count);
+    });
+
     // 1. Instant Messaging Listeners
     socket.on('new_message', ({ message, conversationId }: { message: any; conversationId: string }) => {
       console.log('[Socket.IO] Incoming message received:', message);
