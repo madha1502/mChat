@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: aether-messenger-api
+    name: mchat-server
     env: node
     rootDir: server
     buildCommand: npm install && npm run build
@@ -18,5 +18,15 @@ services:
         generateValue: true
       - key: ENCRYPTION_KEY
         generateValue: true
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        value: "mChat 💖" <monishs2026@gmail.com>
       - key: WHATSAPP_VERIFY_TOKEN
         generateValue: true
