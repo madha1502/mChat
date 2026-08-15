@@ -79,7 +79,7 @@ export class AuthService {
       purpose,
     });
 
-    return { success: true, email: cleanEmail, otp: otpCode };
+    return { success: true, email: cleanEmail };
   }
 
   /**
@@ -171,13 +171,12 @@ export class AuthService {
     }
 
     // Send 6-digit OTP to user's registered Gmail
-    const otpResult = await this.sendOtp(user.email, 'login', user.name);
+    await this.sendOtp(user.email, 'login', user.name);
 
     return {
       requireOtp: true,
       email: user.email,
       name: user.name,
-      otp: otpResult.otp,
     };
   }
 
