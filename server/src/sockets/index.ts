@@ -22,7 +22,14 @@ export interface AuthenticatedSocket extends Socket {
 export const initializeSocket = (httpServer: HttpServer): Server => {
   const io = new Server(httpServer, {
     cors: {
-      origin: [config.clientUrl, 'http://localhost:5173', 'http://127.0.0.1:5173'],
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (origin.endsWith('.vercel.app')) return callback(null, true);
+        if (origin.endsWith('.onrender.com')) return callback(null, true);
+        const allowed = [config.clientUrl, 'http://localhost:5173', 'http://127.0.0.1:5173'];
+        if (allowed.some(a => a && origin === a)) return callback(null, true);
+        callback(new Error(`Socket CORS: origin '${origin}' not allowed`));
+      },
       methods: ['GET', 'POST'],
       credentials: true,
     },

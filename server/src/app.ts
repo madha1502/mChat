@@ -22,10 +22,39 @@ app.use(
   })
 );
 
+// Build allowed CORS origins from env (supports comma-separated list)
+const allowedOrigins = new Set<string>([
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+]);
+
+// Add all origins from CLIENT_URL (comma-separated for multiple deployments)
+if (config.clientUrl) {
+  config.clientUrl.split(',').map(o => o.trim()).filter(Boolean).forEach(o => allowedOrigins.add(o));
+}
+
+console.log('[CORS] Allowed origins:', [...allowedOrigins]);
+
 // CORS configuration
 app.use(
   cors({
-    origin: [config.clientUrl, 'http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, curl, Render health checks)
+      if (!origin) return callback(null, true);
+
+      // Allow any Vercel deployment (*.vercel.app)
+      if (origin.endsWith('.vercel.app')) return callback(null, true);
+
+      // Allow any Render deployment (*.onrender.com) for server-to-server
+      if (origin.endsWith('.onrender.com')) return callback(null, true);
+
+      // Allow explicitly listed origins
+      if (allowedOrigins.has(origin)) return callback(null, true);
+
+      console.warn(`[CORS] Blocked origin: ${origin}`);
+      callback(new Error(`CORS: Origin '${origin}' is not allowed.`));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
