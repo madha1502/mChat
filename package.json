@@ -1,17 +1,26 @@
 {
-  "name": "aether-unified-messenger",
+  "name": "mchat-java-messenger",
   "version": "1.0.0",
   "private": true,
-  "description": "Production-grade unified real-time messenger with Google Auth & Meta WhatsApp Business Platform integration",
+  "description": "Unified Real-Time Messaging Platform with Java Spring Boot 3, Netty-SocketIO, 6-digit OTP 2FA, WebRTC Calling, 24h Stories, and Meta WhatsApp Business Cloud Platform Integration",
   "scripts": {
-    "dev:server": "npm --prefix server run dev",
+    "dev:server": "cd server && mvnw.cmd spring-boot:run",
+    "dev:server:sh": "cd server && ./mvnw spring-boot:run",
     "dev:client": "npm --prefix client run dev",
-    "build:server": "npm --prefix server run build",
+    "build:server": "cd server && mvnw.cmd clean package -DskipTests",
     "build:client": "npm --prefix client run build",
-    "build": "npm run build:server && npm run build:client",
-    "test": "npm --prefix server test"
+    "test:server": "cd server && mvnw.cmd test"
   },
-  "keywords": ["real-time", "socket.io", "webrtc", "whatsapp-business", "react", "nodejs", "mongodb"],
-  "author": "",
+  "keywords": [
+    "java",
+    "spring-boot-3",
+    "socket-io",
+    "real-time",
+    "webrtc",
+    "whatsapp-business-cloud-api",
+    "react-19",
+    "tailwind-css",
+    "unified-inbox"
+  ],
   "license": "ISC"
 }
