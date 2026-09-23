@@ -59,57 +59,63 @@ export const socketService = {
       useChatStore.getState().fetchConversations();
     });
 
-    socket.on('message_status_update', ({ messageId, status }: { messageId: string; status: string }) => {
-      useChatStore.getState().handleMessageStatusUpdate(messageId, status);
+    socket.on('message_status_update', ({ conversationId, messageId, deliveredAt, status }: any) => {
+      if (status === 'delivered') {
+        useChatStore.getState().handleMessageDelivered(conversationId, messageId, deliveredAt || new Date().toISOString());
+      }
     });
 
-    socket.on('message_reaction_update', ({ messageId, reactions }: { messageId: string; reactions: any[] }) => {
-      useChatStore.getState().handleReactionUpdate(messageId, reactions);
+    socket.on('message_read_update', ({ conversationId, readerId, readAt }: any) => {
+      useChatStore.getState().handleMessageRead(conversationId, readerId, readAt || new Date().toISOString());
     });
 
-    socket.on('message_edited', ({ messageId, content }: { messageId: string; content: string }) => {
-      useChatStore.getState().handleMessageEdited(messageId, content);
+    socket.on('message_reaction_update', ({ conversationId, messageId, reactions }: any) => {
+      useChatStore.getState().handleReactionUpdated(conversationId, messageId, reactions);
     });
 
-    socket.on('message_deleted', ({ messageId }: { messageId: string }) => {
-      useChatStore.getState().handleMessageDeleted(messageId);
+    socket.on('message_edited', ({ conversationId, messageId, content, isEdited }: any) => {
+      useChatStore.getState().handleMessageEdited(conversationId, messageId, content, isEdited ?? true);
     });
 
-    // 2. Typing Indicator Listeners
-    socket.on('user_typing', ({ conversationId, userId, userName }: { conversationId: string; userId: string; userName: string }) => {
-      useChatStore.getState().handleUserTyping(conversationId, userId, userName);
+    socket.on('message_deleted', ({ conversationId, messageId, forEveryone }: any) => {
+      useChatStore.getState().handleMessageDeleted(conversationId, messageId, forEveryone ?? true);
     });
 
-    socket.on('user_stop_typing', ({ conversationId, userId }: { conversationId: string; userId: string }) => {
-      useChatStore.getState().handleUserStopTyping(conversationId, userId);
-    });
-
-    // 3. User Presence Listeners
+    // 2. User Presence & Typing Listeners
     socket.on('user_presence_change', ({ userId, isOnline, lastSeen }: { userId: string; isOnline: boolean; lastSeen?: string }) => {
-      useChatStore.getState().handleUserPresenceChange(userId, isOnline, lastSeen);
+      useChatStore.getState().handlePresenceChange(userId, isOnline, lastSeen);
     });
 
-    // 4. WebRTC Peer-to-Peer Video/Voice Call Listeners
-    socket.on('incoming_call', (data: { callId: string; caller: any; callType: 'audio' | 'video'; conversationId: string }) => {
+    // 3. WebRTC Call Listeners
+    socket.on('incoming_call', (data: any) => {
       console.log('[Socket.IO] Incoming WebRTC call:', data);
-      useCallStore.getState().handleIncomingCall(data);
+      useCallStore.getState().handleIncomingCall({
+        callId: data.callId,
+        caller: data.caller,
+        conversationId: data.conversationId,
+        type: data.type || data.callType || 'audio',
+        offer: data.offer || data.signalData,
+      });
     });
 
-    socket.on('call_answered', (data: { callId: string; signalData: any }) => {
-      console.log('[Socket.IO] Call answered by peer:', data);
-      useCallStore.getState().handleCallAnswered(data);
+    socket.on('call_accepted', (data: any) => {
+      useCallStore.getState().handleCallAccepted(data);
     });
 
-    socket.on('webrtc_signal', (data: { callId: string; signalData: any }) => {
-      useCallStore.getState().handleWebRTCSignal(data);
+    socket.on('ice_candidate', (data: any) => {
+      useCallStore.getState().handleIceCandidate(data.candidate);
     });
 
-    socket.on('call_rejected', () => {
-      useCallStore.getState().endCall();
+    socket.on('call_rejected', (data: any) => {
+      useCallStore.getState().handleCallRejected(data);
     });
 
-    socket.on('call_ended', () => {
-      useCallStore.getState().endCall();
+    socket.on('call_ended', (data: any) => {
+      useCallStore.getState().handleCallEnded(data);
+    });
+
+    socket.on('peer_media_state', (data: any) => {
+      useCallStore.getState().handlePeerMediaState(data);
     });
   },
 
@@ -125,8 +131,71 @@ export const socketService = {
     socket?.emit('join_conversation', conversationId);
   },
 
+  joinConversation(conversationId: string) {
+    socket?.emit('join_conversation', conversationId);
+  },
+
   emitLeaveConversation(conversationId: string) {
     socket?.emit('leave_conversation', conversationId);
+  },
+
+  leaveConversation(conversationId: string) {
+    socket?.emit('leave_conversation', conversationId);
+  },
+
+  sendMessage(messageData: any) {
+    return new Promise((resolve, reject) => {
+      if (!socket) return reject(new Error('Socket disconnected'));
+      socket.emit('send_message', messageData, (response: any) => {
+        if (response?.error) reject(new Error(response.error));
+        else resolve(response);
+      });
+    });
+  },
+
+  editMessage(messageId: string, content: string) {
+    socket?.emit('edit_message', { messageId, content });
+  },
+
+  deleteMessage(messageId: string, forEveryone: boolean) {
+    socket?.emit('delete_message', { messageId, forEveryone });
+  },
+
+  toggleReaction(messageId: string, emoji: string) {
+    socket?.emit('toggle_reaction', { messageId, emoji });
+  },
+
+  emitRead(conversationId: string, messageIds?: string[]) {
+    socket?.emit('mark_read', { conversationId, messageIds });
+  },
+
+  emitDelivered(messageId: string, conversationId: string) {
+    socket?.emit('mark_delivered', { messageId, conversationId });
+  },
+
+  // WebRTC Signal Emitting Methods used by callStore
+  callUser(data: { targetUserId: string; conversationId?: string; type: string; offer: any }) {
+    socket?.emit('call_user', data);
+  },
+
+  answerCall(data: { callId: string; callerId: string; answer: any }) {
+    socket?.emit('answer_call', data);
+  },
+
+  rejectCall(data: { callId: string; callerId: string }) {
+    socket?.emit('reject_call', data);
+  },
+
+  endCall(data: { callId: string; targetUserId: string }) {
+    socket?.emit('end_call', data);
+  },
+
+  sendIceCandidate(targetUserId: string, candidate: any) {
+    socket?.emit('ice_candidate', { targetUserId, candidate });
+  },
+
+  toggleMediaState(data: { targetUserId: string; isMuted?: boolean; isVideoOff?: boolean }) {
+    socket?.emit('toggle_media_state', data);
   },
 
   emitTyping(conversationId: string) {
@@ -135,18 +204,5 @@ export const socketService = {
 
   emitStopTyping(conversationId: string) {
     socket?.emit('stop_typing', { conversationId });
-  },
-
-  // WebRTC Signal Emitting
-  emitCallSignal(targetUserId: string, signalData: any, callId: string) {
-    socket?.emit('webrtc_signal', { targetUserId, signalData, callId });
-  },
-
-  emitRejectCall(callerId: string, callId: string) {
-    socket?.emit('reject_call', { callerId, callId });
-  },
-
-  emitEndCall(peerUserId: string, callId: string) {
-    socket?.emit('end_call', { peerUserId, callId });
   },
 };
