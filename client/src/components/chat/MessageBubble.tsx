@@ -13,13 +13,9 @@ import {
   Download,
   MapPin,
   Smile,
-  MoreVertical,
   Reply,
   Edit2,
   Trash2,
-  Pin,
-  Star,
-  Forward,
 } from 'lucide-react';
 
 interface MessageBubbleProps {
@@ -32,14 +28,12 @@ const REACTION_EMOJIS = ['❤️', '😂', '👍', '😮', '😢', '🔥', '👏
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
   message,
-  previousMessage,
   onReply,
 }) => {
   const { user: currentUser } = useAuthStore();
-  const { editMessage, deleteMessage, toggleReaction, toggleStarMessage } = useChatStore();
+  const { editMessage, deleteMessage, toggleReaction } = useChatStore();
 
   const [showPicker, setShowPicker] = useState(false);
-  const [showOptions, setShowOptions] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content || '');
 
@@ -128,7 +122,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           src={sender?.profilePicture}
           name={sender?.name || 'User'}
           size="sm"
-          className="mb-1 shrink-0 ring-2 ring-white shadow-sm"
+          className="mb-1 shrink-0 ring-2 ring-white/80 dark:ring-slate-700 shadow-sm"
         />
       )}
 
@@ -140,30 +134,30 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           <div
             className={`mb-1 p-2 rounded-xl text-xs max-w-full truncate border-l-4 ${
               isSelf
-                ? 'bg-pink-200/50 border-pink-500 text-pink-900'
-                : 'bg-slate-100 border-pink-400 text-slate-700'
+                ? 'bg-white/20 border-white text-white'
+                : 'bg-slate-100 dark:bg-slate-800 border-pink-400 dark:border-pink-500 text-slate-700 dark:text-slate-200'
             }`}
           >
-            <span className="font-bold block text-[10px] text-pink-600">
+            <span className="font-bold block text-[10px] text-pink-500 dark:text-pink-400">
               {(message.replyTo.senderId as any)?.name || 'Reply to message'}
             </span>
             <span className="truncate block opacity-90">{message.replyTo.content || 'Media message'}</span>
           </div>
         )}
 
-        {/* The Cute Love Bubble Card */}
+        {/* The Love Bubble Card with Dynamic Theme Gradients */}
         <div
           className={`relative px-4 py-2.5 rounded-[22px] transition-all ${
             isDeleted
-              ? 'bg-slate-100/80 text-slate-400 italic text-xs border border-dashed border-slate-200'
+              ? 'bg-slate-100/80 dark:bg-slate-800/80 text-slate-400 italic text-xs border border-dashed border-slate-200 dark:border-slate-700'
               : isSelf
-              ? 'bg-gradient-to-r from-[#FF758C] to-[#FFA2B3] text-white shadow-[0_6px_18px_rgba(255,117,140,0.25)] rounded-br-sm'
-              : 'bg-white text-[#4A3E3D] shadow-[0_4px_15px_rgba(0,0,0,0.04)] border border-pink-100/60 rounded-bl-sm'
+              ? '[background:var(--bubble-out)] text-white shadow-md rounded-br-sm'
+              : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 shadow-sm border border-pink-100/80 dark:border-slate-700/80 rounded-bl-sm'
           }`}
         >
           {/* Incoming Sender Name in Group chats */}
           {!isSelf && sender && (
-            <span className="block text-[11px] font-bold text-pink-500 mb-0.5">
+            <span className="block text-[11px] font-bold text-pink-500 dark:text-pink-400 mb-0.5">
               {sender.name}
             </span>
           )}
@@ -236,7 +230,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
               {/* Waveform Scrubber */}
               <div className="flex-1 space-y-1">
-                <div className="h-2 rounded-full bg-black/10 overflow-hidden relative">
+                <div className="h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden relative">
                   <div
                     className={`h-full transition-all ${isSelf ? 'bg-white' : 'bg-pink-500'}`}
                     style={{ width: `${audioProgress}%` }}
@@ -247,7 +241,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                   <button
                     type="button"
                     onClick={cyclePlaybackRate}
-                    className="hover:opacity-100 font-bold px-1 rounded bg-black/10"
+                    className="hover:opacity-100 font-bold px-1 rounded bg-black/10 dark:bg-white/10"
                   >
                     {playbackRate}x
                   </button>
@@ -262,7 +256,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               href={message.mediaUrl}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-3 p-2 bg-black/10 rounded-xl hover:bg-black/15 transition-colors"
+              className="flex items-center gap-3 p-2 bg-black/10 dark:bg-white/10 rounded-xl hover:bg-black/15 transition-colors"
             >
               <FileText className="w-7 h-7 shrink-0" />
               <div className="min-w-0 flex-1 text-xs">
@@ -281,7 +275,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
               href={`https://www.google.com/maps?q=${message.location.latitude},${message.location.longitude}`}
               target="_blank"
               rel="noreferrer"
-              className="block p-2 bg-black/10 rounded-xl hover:bg-black/15 text-xs space-y-1"
+              className="block p-2 bg-black/10 dark:bg-white/10 rounded-xl hover:bg-black/15 text-xs space-y-1"
             >
               <div className="flex items-center gap-1.5 font-bold">
                 <MapPin className="w-4 h-4 text-rose-300" />
@@ -296,7 +290,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           {/* Timestamp & Status Delivery Ticks */}
           <div
             className={`flex items-center justify-end gap-1 mt-1 text-[10px] font-semibold select-none ${
-              isSelf ? 'text-white/85' : 'text-slate-400'
+              isSelf ? 'text-white/85' : 'text-slate-400 dark:text-slate-400'
             }`}
           >
             <span>{timeFormatted}</span>
@@ -319,7 +313,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         {/* Reaction Badges Pill */}
         {message.reactions && message.reactions.length > 0 && (
           <div
-            className={`flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-full bg-white/90 shadow-sm border border-pink-100 text-xs ${
+            className={`flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-full bg-white/90 dark:bg-slate-800/90 shadow-sm border border-pink-100 dark:border-slate-700 text-xs ${
               isSelf ? 'mr-1' : 'ml-1'
             }`}
           >
@@ -334,20 +328,20 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
         {/* Action Toolbar on Hover */}
         <div
-          className={`absolute top-0 opacity-0 group-hover:opacity-100 flex items-center gap-0.5 p-1 bg-white/95 rounded-full shadow-md border border-pink-100 transition-all z-20 ${
+          className={`absolute top-0 opacity-0 group-hover:opacity-100 flex items-center gap-0.5 p-1 bg-white/95 dark:bg-slate-800/95 rounded-full shadow-md border border-pink-100 dark:border-slate-700 transition-all z-20 ${
             isSelf ? '-left-20' : '-right-20'
           }`}
         >
           <button
             onClick={() => setShowPicker(!showPicker)}
-            className="p-1 text-slate-400 hover:text-pink-500 rounded-full hover:bg-pink-50"
+            className="p-1 text-slate-400 hover:text-pink-500 rounded-full hover:bg-pink-50 dark:hover:bg-slate-700"
             title="React with Emoji"
           >
             <Smile className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => onReply?.(message)}
-            className="p-1 text-slate-400 hover:text-pink-500 rounded-full hover:bg-pink-50"
+            className="p-1 text-slate-400 hover:text-pink-500 rounded-full hover:bg-pink-50 dark:hover:bg-slate-700"
             title="Reply"
           >
             <Reply className="w-3.5 h-3.5" />
@@ -355,7 +349,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           {isSelf && !isDeleted && message.messageType === 'text' && (
             <button
               onClick={() => setIsEditing(true)}
-              className="p-1 text-slate-400 hover:text-pink-500 rounded-full hover:bg-pink-50"
+              className="p-1 text-slate-400 hover:text-pink-500 rounded-full hover:bg-pink-50 dark:hover:bg-slate-700"
               title="Edit"
             >
               <Edit2 className="w-3.5 h-3.5" />
@@ -364,7 +358,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           {isSelf && !isDeleted && (
             <button
               onClick={() => deleteMessage(message._id, true)}
-              className="p-1 text-slate-400 hover:text-rose-500 rounded-full hover:bg-rose-50"
+              className="p-1 text-slate-400 hover:text-rose-500 rounded-full hover:bg-rose-50 dark:hover:bg-rose-950/40"
               title="Delete for Everyone"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -375,7 +369,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
         {/* Emoji Picker Popup */}
         {showPicker && (
           <div
-            className={`absolute -top-10 flex items-center gap-1.5 p-1.5 bg-white rounded-full shadow-xl border border-pink-100 z-30 animate-in zoom-in-95 ${
+            className={`absolute -top-10 flex items-center gap-1.5 p-1.5 bg-white dark:bg-slate-800 rounded-full shadow-xl border border-pink-100 dark:border-slate-700 z-30 animate-in zoom-in-95 ${
               isSelf ? 'right-0' : 'left-0'
             }`}
           >
@@ -402,7 +396,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
           src={currentUser?.profilePicture}
           name={currentUser?.name || 'You'}
           size="sm"
-          className="mb-1 shrink-0 ring-2 ring-pink-200 shadow-sm"
+          className="mb-1 shrink-0 ring-2 ring-pink-200 dark:ring-pink-900 shadow-sm"
         />
       )}
     </div>

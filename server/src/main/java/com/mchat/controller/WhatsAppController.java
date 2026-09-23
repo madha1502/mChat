@@ -73,7 +73,7 @@ public class WhatsAppController {
         return ResponseEntity.ok(ApiResponse.ok("WhatsApp integration connected", integration));
     }
 
-    @GetMapping("/me")
+    @GetMapping({"", "/me"})
     public ResponseEntity<?> getIntegration(@AuthenticationPrincipal UserPrincipal principal) {
         WhatsAppIntegration integration = whatsAppService.getIntegration(principal.getId());
         return ResponseEntity.ok(ApiResponse.ok(integration));

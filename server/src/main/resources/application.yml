@@ -6,15 +6,25 @@ server:
 spring:
   application:
     name: mchat-server
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   servlet:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
+
+  # Default Development Database (Embedded H2 for instant local zero-config running)
   datasource:
-    url: jdbc:h2:file:./data/mchatdb;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE
-    driverClassName: org.h2.Driver
-    username: sa
-    password: 
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:file:./data/mchatdb;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE}
+    driverClassName: ${SPRING_DATASOURCE_DRIVER:org.h2.Driver}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+  
   jpa:
     hibernate:
       ddl-auto: update
@@ -22,10 +32,21 @@ spring:
     properties:
       hibernate:
         format_sql: false
+        dialect: ${SPRING_JPA_DIALECT:org.hibernate.dialect.H2Dialect}
+
   h2:
     console:
       enabled: true
       path: /h2-console
+
+  # Redis Cache & Presence Configuration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+
   mail:
     host: ${SMTP_HOST:smtp.gmail.com}
     port: ${SMTP_PORT:587}

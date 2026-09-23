@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useChatStore } from '../../stores/chatStore';
 import { socketService } from '../../services/socketService';
 import { api } from '../../services/api';
@@ -12,7 +12,6 @@ import {
   FileText,
   MapPin,
   Heart,
-  Sparkles,
 } from 'lucide-react';
 
 const COMMON_EMOJIS = ['💖', '💕', '🌸', '🧸', '🐼', '✨', '💝', '💗', '🍓', '🎀', '🥰', '😍', '😘', '🥺', '🎉'];
@@ -191,27 +190,27 @@ export const ChatInput: React.FC = () => {
   };
 
   return (
-    <div className="relative p-4 bg-white/80 backdrop-blur-md border-t border-pink-100 rounded-b-[28px]">
+    <div className="relative p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-t border-pink-100/90 dark:border-slate-800 rounded-b-none md:rounded-b-[28px] transition-colors">
       {/* Hidden File Input */}
       <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileUpload} />
 
       {/* Reply Preview Bar */}
       {replyingTo && (
-        <div className="mb-2 flex items-center justify-between p-2.5 bg-pink-50/90 rounded-2xl border border-pink-200 text-xs">
+        <div className="mb-2 flex items-center justify-between p-2.5 bg-pink-50/90 dark:bg-slate-800/90 rounded-2xl border border-pink-200 dark:border-slate-700 text-xs">
           <div className="flex items-center gap-2 overflow-hidden">
             <div className="w-1.5 h-7 rounded-full bg-pink-500 shrink-0" />
             <div className="truncate">
-              <span className="font-bold text-pink-600 block text-[11px]">
+              <span className="font-bold text-pink-600 dark:text-pink-400 block text-[11px]">
                 Replying to {(replyingTo.senderId as any)?.name || 'message'}
               </span>
-              <span className="text-slate-600 truncate block text-[11px]">
+              <span className="text-slate-600 dark:text-slate-300 truncate block text-[11px]">
                 {replyingTo.content || 'Media message'}
               </span>
             </div>
           </div>
           <button
             onClick={() => setReplyingTo(null)}
-            className="p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-pink-100"
+            className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-pink-100 dark:hover:bg-slate-700"
           >
             <X className="w-4 h-4" />
           </button>
@@ -222,7 +221,7 @@ export const ChatInput: React.FC = () => {
       {showEmojiPicker && (
         <>
           <div className="fixed inset-0 z-30" onClick={() => setShowEmojiPicker(false)} />
-          <div className="absolute bottom-20 left-4 p-3 bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-pink-100 z-40 animate-in zoom-in-95 grid grid-cols-5 gap-2 text-xl max-w-xs">
+          <div className="absolute bottom-20 left-4 p-3 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-3xl shadow-2xl border border-pink-100 dark:border-slate-700 z-40 animate-in zoom-in-95 grid grid-cols-5 gap-2 text-xl max-w-xs">
             {COMMON_EMOJIS.map((emoji) => (
               <button
                 key={emoji}
@@ -231,7 +230,7 @@ export const ChatInput: React.FC = () => {
                   setText((prev) => prev + emoji);
                   setShowEmojiPicker(false);
                 }}
-                className="p-2 hover:bg-pink-50 hover:scale-125 rounded-2xl transition-all"
+                className="p-2 hover:bg-pink-50 dark:hover:bg-slate-700 hover:scale-125 rounded-2xl transition-all"
               >
                 {emoji}
               </button>
@@ -244,17 +243,17 @@ export const ChatInput: React.FC = () => {
       {showAttachments && (
         <>
           <div className="fixed inset-0 z-30" onClick={() => setShowAttachments(false)} />
-          <div className="absolute bottom-20 left-14 p-2 bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-pink-100 z-40 animate-in zoom-in-95 flex flex-col gap-1 text-xs font-bold text-slate-700 min-w-[170px]">
+          <div className="absolute bottom-20 left-14 p-2 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-3xl shadow-2xl border border-pink-100 dark:border-slate-700 z-40 animate-in zoom-in-95 flex flex-col gap-1 text-xs font-bold text-slate-700 dark:text-slate-200 min-w-[170px]">
             <button
               onClick={() => handleAttachClick('image')}
-              className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-pink-50 text-pink-600 transition-colors"
+              className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-pink-50 dark:hover:bg-slate-700 text-pink-600 dark:text-pink-400 transition-colors"
             >
               <ImageIcon className="w-4 h-4 text-pink-500" />
               Photo / Video
             </button>
             <button
               onClick={() => handleAttachClick('document')}
-              className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-pink-50 text-indigo-600 transition-colors"
+              className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-pink-50 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400 transition-colors"
             >
               <FileText className="w-4 h-4 text-indigo-500" />
               Document
@@ -272,7 +271,7 @@ export const ChatInput: React.FC = () => {
                   });
                 }
               }}
-              className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-pink-50 text-rose-600 transition-colors"
+              className="flex items-center gap-3 p-2.5 rounded-2xl hover:bg-pink-50 dark:hover:bg-slate-700 text-rose-600 dark:text-rose-400 transition-colors"
             >
               <MapPin className="w-4 h-4 text-rose-500" />
               Share Location
@@ -284,23 +283,23 @@ export const ChatInput: React.FC = () => {
       {/* Main Input Control Bar */}
       {isRecording ? (
         /* Voice Recording Active Bar */
-        <div className="flex items-center justify-between p-2 bg-pink-50 rounded-full border border-pink-200 animate-pulse">
+        <div className="flex items-center justify-between p-2 bg-pink-50 dark:bg-slate-800 rounded-full border border-pink-200 dark:border-slate-700 animate-pulse">
           <div className="flex items-center gap-3 pl-4">
             <span className="w-3 h-3 rounded-full bg-rose-500 animate-ping" />
-            <span className="text-xs font-bold text-rose-600">
+            <span className="text-xs font-bold text-rose-600 dark:text-rose-400">
               Recording Voice Note... ({recordingSeconds}s)
             </span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={cancelRecording}
-              className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-pink-100"
+              className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-pink-100 dark:hover:bg-slate-700"
             >
               <X className="w-4 h-4" />
             </button>
             <button
               onClick={stopRecording}
-              className="p-2.5 bg-gradient-to-r from-[#FF758C] to-[#FF7EB3] text-white rounded-full shadow-md hover:scale-105 transition-all"
+              className="p-2.5 [background:var(--header-bg)] text-white rounded-full shadow-md hover:scale-105 transition-all"
             >
               <Send className="w-4 h-4" />
             </button>
@@ -313,7 +312,7 @@ export const ChatInput: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            className="p-2.5 rounded-full text-pink-400 hover:text-pink-600 hover:bg-pink-50 transition-colors shrink-0"
+            className="p-2.5 rounded-full text-pink-500 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-800 transition-colors shrink-0"
           >
             <Smile className="w-5 h-5" />
           </button>
@@ -322,7 +321,7 @@ export const ChatInput: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowAttachments(!showAttachments)}
-            className="p-2.5 rounded-full text-pink-400 hover:text-pink-600 hover:bg-pink-50 transition-colors shrink-0"
+            className="p-2.5 rounded-full text-pink-500 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-slate-800 transition-colors shrink-0"
           >
             <Paperclip className="w-5 h-5" />
           </button>
@@ -334,7 +333,7 @@ export const ChatInput: React.FC = () => {
               value={text}
               onChange={handleTyping}
               placeholder="Say something cute... 💖"
-              className="w-full px-5 py-3 bg-[#FFF0F2] text-sm text-slate-800 placeholder-pink-300 font-medium rounded-full border border-pink-200/80 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-200 transition-all"
+              className="w-full px-5 py-3 bg-pink-50/60 dark:bg-slate-800/80 text-sm text-slate-800 dark:text-slate-100 placeholder-pink-300 dark:placeholder-slate-500 font-medium rounded-full border border-pink-200/80 dark:border-slate-700 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-200 dark:focus:ring-purple-900 transition-all"
             />
           </div>
 
@@ -343,7 +342,7 @@ export const ChatInput: React.FC = () => {
             <button
               type="button"
               onClick={handleSendHeart}
-              className="p-2.5 rounded-full bg-pink-50 text-rose-500 hover:bg-pink-100 hover:scale-110 active:scale-95 transition-all shrink-0"
+              className="p-2.5 rounded-full bg-pink-50 dark:bg-slate-800 text-rose-500 hover:bg-pink-100 dark:hover:bg-slate-700 hover:scale-110 active:scale-95 transition-all shrink-0"
               title="Send Heart"
             >
               <Heart className="w-5 h-5 fill-rose-400 text-rose-500 animate-heart-pulse" />
@@ -354,7 +353,7 @@ export const ChatInput: React.FC = () => {
           {text.trim() ? (
             <button
               type="submit"
-              className="p-3 rounded-full bg-gradient-to-r from-[#FF758C] to-[#FF7EB3] text-white shadow-lg shadow-pink-500/25 hover:scale-105 active:scale-95 transition-all shrink-0"
+              className="p-3 rounded-full [background:var(--header-bg)] text-white shadow-lg shadow-pink-500/25 hover:scale-105 active:scale-95 transition-all shrink-0"
             >
               <Send className="w-4 h-4 ml-0.5" />
             </button>
@@ -362,7 +361,7 @@ export const ChatInput: React.FC = () => {
             <button
               type="button"
               onClick={startRecording}
-              className="p-3 rounded-full bg-gradient-to-r from-[#FF758C] to-[#FF7EB3] text-white shadow-lg shadow-pink-500/25 hover:scale-105 active:scale-95 transition-all shrink-0"
+              className="p-3 rounded-full [background:var(--header-bg)] text-white shadow-lg shadow-pink-500/25 hover:scale-105 active:scale-95 transition-all shrink-0"
               title="Record Voice Note"
             >
               <Mic className="w-4 h-4" />

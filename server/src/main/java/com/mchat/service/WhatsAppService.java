@@ -93,7 +93,12 @@ public class WhatsAppService {
         WhatsAppIntegration integration = integrationRepository.findByUserId(userId)
                 .orElseGet(() -> WhatsAppIntegration.builder().userId(userId).build());
 
-        integration.setPhoneNumberId(req.getPhoneNumberId());
+        String phoneId = req.getPhoneNumberId();
+        if (phoneId == null || phoneId.isBlank()) {
+            phoneId = "phone_id_" + UUID.randomUUID().toString().substring(0, 8);
+        }
+
+        integration.setPhoneNumberId(phoneId);
         integration.setBusinessAccountId(req.getBusinessAccountId());
         integration.setDisplayPhoneNumber(req.getDisplayPhoneNumber());
         integration.setAccessTokenEncrypted(req.getAccessToken()); // In prod, encrypt with AES-GCM

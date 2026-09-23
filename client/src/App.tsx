@@ -3,6 +3,7 @@ import { useAuthStore } from './stores/authStore';
 import { useChatStore } from './stores/chatStore';
 import { useStatusStore } from './stores/statusStore';
 import { useWhatsAppStore } from './stores/whatsappStore';
+import { useThemeStore } from './stores/themeStore';
 
 // Components
 import { AuthModal } from './components/auth/AuthModal';
@@ -31,6 +32,7 @@ import { Heart, Plus, Sparkles, MessageSquareCode } from 'lucide-react';
 
 export const App: React.FC = () => {
   const { user, isInitialized, initializeAuth } = useAuthStore();
+  const { theme } = useThemeStore();
   const {
     conversations,
     activeConversation,
@@ -63,10 +65,10 @@ export const App: React.FC = () => {
 
   if (!isInitialized) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-rose-50 to-purple-100 text-slate-700">
+      <div className={`theme-${theme} h-screen w-screen flex items-center justify-center [background:var(--bg-gradient)] text-slate-700`}>
         <FloatingHearts />
         <div className="flex flex-col items-center gap-3 relative z-10">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-r from-[#FF758C] to-[#FF7EB3] text-white flex items-center justify-center shadow-lg shadow-pink-500/25 animate-bounce">
+          <div className="w-14 h-14 rounded-full [background:var(--header-bg)] text-white flex items-center justify-center shadow-lg shadow-pink-500/25 animate-bounce">
             <Heart className="w-7 h-7 fill-white" />
           </div>
           <p className="text-xs font-bold text-pink-500 tracking-wider uppercase animate-pulse">
@@ -78,22 +80,26 @@ export const App: React.FC = () => {
   }
 
   if (!user) {
-    return <AuthModal />;
+    return (
+      <div className={`theme-${theme}`}>
+        <AuthModal />
+      </div>
+    );
   }
 
   const activeMessages = activeConversation ? messagesByConversation[activeConversation._id] || [] : [];
   const pinnedMessage = activeMessages.find((m) => m.pinned) || null;
 
   return (
-    <div className="relative flex h-screen w-screen bg-gradient-to-br from-pink-100 via-rose-50 via-purple-50 to-blue-100 text-slate-800 overflow-hidden select-none p-0 md:p-6 lg:p-8">
-      {/* Floating Animated Hearts Background */}
-      <FloatingHearts />
+    <div className={`theme-${theme} relative flex h-screen w-screen [background:var(--bg-gradient)] text-slate-800 dark:text-slate-100 overflow-hidden select-none p-0 md:p-6 lg:p-8 transition-colors`}>
+      {/* Floating Animated Hearts / Ambient Background */}
+      {theme === 'pastel' && <FloatingHearts />}
 
       {/* Main Glass Card Container */}
-      <div className="relative z-10 w-full h-full max-w-7xl mx-auto flex rounded-none md:rounded-[32px] shadow-2xl bg-white/90 backdrop-blur-xl border border-white/80 overflow-hidden">
-        {/* 1. LEFT SIDEBAR (Desktop: 360px-400px, Mobile: Full screen when no active chat) */}
+      <div className="relative z-10 w-full h-full max-w-7xl mx-auto flex rounded-none md:rounded-[32px] shadow-2xl bubble-glass overflow-hidden">
+        {/* 1. LEFT SIDEBAR (Desktop: 360px-390px, Mobile: Full screen when no active chat) */}
         <aside
-          className={`w-full md:w-[360px] lg:w-[390px] h-full flex flex-col bg-white/80 border-r border-pink-100/90 shrink-0 z-10 transition-all ${
+          className={`w-full md:w-[360px] lg:w-[390px] h-full flex flex-col bg-white/80 dark:bg-slate-900/80 border-r border-pink-100/90 dark:border-slate-800 shrink-0 z-10 transition-all ${
             activeConversation ? 'hidden md:flex' : 'flex'
           }`}
         >
@@ -108,7 +114,7 @@ export const App: React.FC = () => {
 
         {/* 2. RIGHT CHAT AREA (Desktop: Flex-1, Mobile: Full screen when conversation active) */}
         <main
-          className={`flex-1 h-full flex flex-col bg-[#FFF8FA]/90 overflow-hidden ${
+          className={`flex-1 h-full flex flex-col bg-[#FFF8FA]/90 dark:bg-slate-950/90 overflow-hidden transition-colors ${
             !activeConversation ? 'hidden md:flex' : 'flex'
           }`}
         >
@@ -137,25 +143,25 @@ export const App: React.FC = () => {
             /* Empty Chat Area State */
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-6">
               <div className="relative">
-                <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-pink-100 to-rose-200 flex items-center justify-center text-4xl shadow-xl animate-gentle-bounce">
+                <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-pink-100 to-rose-200 dark:from-slate-800 dark:to-purple-950 flex items-center justify-center text-4xl shadow-xl animate-gentle-bounce border border-pink-200/50 dark:border-purple-800/40">
                   🐼💖🧸
                 </div>
               </div>
 
               <div className="space-y-2 max-w-sm">
-                <h2 className="text-2xl font-black text-slate-800 tracking-tight flex items-center justify-center gap-2">
+                <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight flex items-center justify-center gap-2">
                   mChat
-                  <Heart className="w-6 h-6 fill-pink-500 text-pink-500" />
+                  <Heart className="w-6 h-6 fill-pink-500 text-pink-500 animate-pulse" />
                 </h2>
-                <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                  Chat in style with floating hearts, bouncy bubbles, real-time voice notes, and WhatsApp Business integration.
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                  Unified real-time messaging with custom themes, glassmorphism, WebRTC calling, and Meta WhatsApp Cloud integration.
                 </p>
               </div>
 
               <div className="flex items-center gap-3 pt-2">
                 <button
                   onClick={() => setIsNewChatOpen(true)}
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FF758C] to-[#FF7EB3] text-white rounded-full text-xs font-bold shadow-lg shadow-pink-500/25 hover:scale-105 active:scale-95 transition-all"
+                  className="flex items-center gap-2 px-6 py-3 [background:var(--header-bg)] text-white rounded-full text-xs font-bold shadow-lg shadow-pink-500/25 hover:scale-105 active:scale-95 transition-all"
                 >
                   <Plus className="w-4 h-4" />
                   Start New Chat
@@ -163,7 +169,7 @@ export const App: React.FC = () => {
 
                 <button
                   onClick={openSimulator}
-                  className="flex items-center gap-2 px-5 py-3 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full text-xs font-bold hover:bg-emerald-100 hover:scale-105 active:scale-95 transition-all"
+                  className="flex items-center gap-2 px-5 py-3 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 rounded-full text-xs font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900/60 hover:scale-105 active:scale-95 transition-all"
                 >
                   <MessageSquareCode className="w-4 h-4" />
                   WhatsApp Inbound
@@ -193,4 +199,5 @@ export const App: React.FC = () => {
     </div>
   );
 };
+
 export default App;

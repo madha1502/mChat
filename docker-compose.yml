@@ -1,6 +1,41 @@
 version: '3.8'
 
 services:
+  # 1. PostgreSQL High-Performance Primary Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: mchat-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: mchatdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mchatdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # 2. Redis In-Memory Cache & Presence Engine (<1ms speed)
+  redis:
+    image: redis:7-alpine
+    container_name: mchat-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # 3. Java Spring Boot Server Backend
   server:
     build:
       context: ./server
@@ -10,15 +45,24 @@ services:
       - "5000:5000"
       - "5001:5001"
     environment:
-      - SERVER_PORT=5000
-      - SOCKETIO_PORT=5001
+      - SPRING_PROFILES_ACTIVE=postgres
+      - POSTGRES_URL=jdbc:postgresql://postgres:5432/mchatdb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgrespassword
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
       - JWT_SECRET=mChatSuperSecretJwtKey2026ProductionEnvironment!
       - WHATSAPP_VERIFY_TOKEN=aether_meta_verify_token_2026
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - mchat-uploads:/app/uploads
-      - mchat-data:/app/data
     restart: unless-stopped
 
+  # 4. React 19 Client Web App
   client:
     build:
       context: ./client
@@ -31,5 +75,6 @@ services:
     restart: unless-stopped
 
 volumes:
+  postgres-data:
+  redis-data:
   mchat-uploads:
-  mchat-data:

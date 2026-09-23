@@ -84,7 +84,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   return (
-    <header className="relative z-20 flex items-center justify-between px-6 py-4 bg-gradient-to-r from-[#FF758C] to-[#FF7EB3] text-white shadow-md select-none rounded-t-[28px]">
+    <header className="relative z-20 flex items-center justify-between px-6 py-4 [background:var(--header-bg)] text-white shadow-md select-none rounded-t-none md:rounded-t-[28px] transition-all">
       {/* Left: Back button + Avatar + Details */}
       <div className="flex items-center gap-3 min-w-0">
         {onBack && (
@@ -106,7 +106,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             size="md"
             isGroup={isGroup}
             isOnline={isOnline}
-            className="ring-2 ring-white/90 shadow-sm"
+            className="ring-2 ring-white/90 shadow-sm group-hover:scale-105 transition-transform"
           />
         </div>
 
@@ -114,16 +114,16 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           <div className="flex items-center gap-2">
             <h2
               onClick={() => isGroup && onOpenGroupInfo?.()}
-              className="text-base font-bold text-white tracking-wide truncate hover:underline cursor-pointer flex items-center gap-1.5"
+              className="text-base font-black text-white tracking-wide truncate hover:underline cursor-pointer flex items-center gap-1.5"
             >
               {title}
-              <Heart className="w-3.5 h-3.5 fill-white/80 text-white/90 inline-block shrink-0" />
+              <Heart className="w-3.5 h-3.5 fill-white/80 text-white/90 inline-block shrink-0 animate-pulse" />
             </h2>
             {conversation.source === 'whatsapp_business' && (
               <Badge variant="whatsapp" />
             )}
           </div>
-          <p className="text-xs text-pink-100 font-medium truncate flex items-center gap-1">
+          <p className="text-xs text-white/90 font-medium truncate flex items-center gap-1">
             {isOnline && <span className="w-2 h-2 rounded-full bg-emerald-300 ring-2 ring-white/50 animate-pulse" />}
             {subtitle}
           </p>
@@ -163,14 +163,14 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           {showMenu && (
             <>
               <div className="fixed inset-0 z-30" onClick={() => setShowMenu(false)} />
-              <div className="absolute right-0 mt-2 w-52 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-pink-100 p-1.5 z-40 text-xs font-semibold text-slate-700 space-y-1 animate-in fade-in zoom-in-95">
+              <div className="absolute right-0 mt-2 w-52 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-2xl shadow-xl border border-pink-100 dark:border-slate-700 p-1.5 z-40 text-xs font-semibold text-slate-700 dark:text-slate-200 space-y-1 animate-in fade-in zoom-in-95">
                 {isGroup && (
                   <button
                     onClick={() => {
                       setShowMenu(false);
                       onOpenGroupInfo?.();
                     }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-pink-50 hover:text-pink-600 rounded-xl transition-colors"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-pink-50 dark:hover:bg-slate-700 hover:text-pink-600 dark:hover:text-pink-400 rounded-xl transition-colors"
                   >
                     <Info className="w-4 h-4 text-pink-500" />
                     Group Info
@@ -182,7 +182,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                     togglePinConversation(conversation._id);
                     setShowMenu(false);
                   }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-pink-50 hover:text-pink-600 rounded-xl transition-colors"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-pink-50 dark:hover:bg-slate-700 hover:text-pink-600 dark:hover:text-pink-400 rounded-xl transition-colors"
                 >
                   <Pin className="w-4 h-4 text-pink-500" />
                   {conversation.isPinned ? 'Unpin Conversation' : 'Pin Conversation'}
@@ -193,7 +193,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                     toggleArchiveConversation(conversation._id);
                     setShowMenu(false);
                   }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-pink-50 hover:text-pink-600 rounded-xl transition-colors"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-pink-50 dark:hover:bg-slate-700 hover:text-pink-600 dark:hover:text-pink-400 rounded-xl transition-colors"
                 >
                   <Archive className="w-4 h-4 text-pink-500" />
                   {conversation.isArchived ? 'Unarchive' : 'Archive Chat'}
@@ -204,7 +204,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                     setShowMenu(false);
                     setShowTimerModal(true);
                   }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-pink-50 hover:text-pink-600 rounded-xl transition-colors"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-pink-50 dark:hover:bg-slate-700 hover:text-pink-600 dark:hover:text-pink-400 rounded-xl transition-colors"
                 >
                   <Clock className="w-4 h-4 text-pink-500" />
                   Disappearing Messages
@@ -218,9 +218,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       {/* Disappearing Timer Modal */}
       {showTimerModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl p-6 max-w-xs w-full shadow-2xl border border-pink-100 text-slate-800 space-y-4">
-            <h3 className="text-base font-bold text-slate-800 text-center">Disappearing Messages</h3>
-            <p className="text-xs text-slate-500 text-center">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-xs w-full shadow-2xl border border-pink-100 dark:border-slate-700 text-slate-800 dark:text-slate-100 space-y-4">
+            <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 text-center">Disappearing Messages</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
               New messages in this chat will disappear after the selected duration.
             </p>
             <div className="space-y-1.5">
@@ -238,8 +238,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                   }}
                   className={`w-full py-2.5 text-xs font-bold rounded-xl transition-colors ${
                     conversation.disappearingTimer === opt.seconds
-                      ? 'bg-pink-500 text-white'
-                      : 'bg-pink-50 text-slate-700 hover:bg-pink-100'
+                      ? '[background:var(--header-bg)] text-white'
+                      : 'bg-pink-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-pink-100 dark:hover:bg-slate-600'
                   }`}
                 >
                   {opt.label}
@@ -248,7 +248,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             </div>
             <button
               onClick={() => setShowTimerModal(false)}
-              className="w-full py-2 text-xs font-semibold text-slate-400 hover:text-slate-600"
+              className="w-full py-2 text-xs font-semibold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
             >
               Cancel
             </button>

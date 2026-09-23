@@ -11,8 +11,7 @@ export const socketService = {
 
     const socketUrl =
       import.meta.env.VITE_SOCKET_URL ||
-      import.meta.env.VITE_API_URL ||
-      (window.location.port === '5173' ? 'http://localhost:5000' : window.location.origin);
+      (window.location.port === '5173' ? 'http://localhost:5001' : window.location.origin);
 
     console.log('[Socket.IO] Connecting to:', socketUrl);
 
@@ -60,75 +59,57 @@ export const socketService = {
       useChatStore.getState().fetchConversations();
     });
 
-    socket.on('conversation_updated', (data: any) => {
-      useChatStore.getState().handleConversationUpdated(data);
+    socket.on('message_status_update', ({ messageId, status }: { messageId: string; status: string }) => {
+      useChatStore.getState().handleMessageStatusUpdate(messageId, status);
     });
 
-    socket.on('message_delivered', ({ messageId, conversationId, deliveredAt }: any) => {
-      useChatStore.getState().handleMessageDelivered(conversationId, messageId, deliveredAt);
+    socket.on('message_reaction_update', ({ messageId, reactions }: { messageId: string; reactions: any[] }) => {
+      useChatStore.getState().handleReactionUpdate(messageId, reactions);
     });
 
-    socket.on('message_read', ({ conversationId, readerId, readAt }: any) => {
-      useChatStore.getState().handleMessageRead(conversationId, readerId, readAt);
+    socket.on('message_edited', ({ messageId, content }: { messageId: string; content: string }) => {
+      useChatStore.getState().handleMessageEdited(messageId, content);
     });
 
-    socket.on('message_edited', ({ messageId, conversationId, content, isEdited }: any) => {
-      useChatStore.getState().handleMessageEdited(conversationId, messageId, content, isEdited);
+    socket.on('message_deleted', ({ messageId }: { messageId: string }) => {
+      useChatStore.getState().handleMessageDeleted(messageId);
     });
 
-    socket.on('message_deleted', ({ messageId, conversationId, forEveryone }: any) => {
-      useChatStore.getState().handleMessageDeleted(conversationId, messageId, forEveryone);
+    // 2. Typing Indicator Listeners
+    socket.on('user_typing', ({ conversationId, userId, userName }: { conversationId: string; userId: string; userName: string }) => {
+      useChatStore.getState().handleUserTyping(conversationId, userId, userName);
     });
 
-    socket.on('reaction_updated', ({ messageId, conversationId, reactions }: any) => {
-      useChatStore.getState().handleReactionUpdated(conversationId, messageId, reactions);
+    socket.on('user_stop_typing', ({ conversationId, userId }: { conversationId: string; userId: string }) => {
+      useChatStore.getState().handleUserStopTyping(conversationId, userId);
     });
 
-    // 2. Presence & Typing Listeners
-    socket.on('user_presence_change', (data: { userId: string; isOnline: boolean; lastSeen?: string }) => {
-      useChatStore.getState().handlePresenceChange(data.userId, data.isOnline, data.lastSeen);
+    // 3. User Presence Listeners
+    socket.on('user_presence_change', ({ userId, isOnline, lastSeen }: { userId: string; isOnline: boolean; lastSeen?: string }) => {
+      useChatStore.getState().handleUserPresenceChange(userId, isOnline, lastSeen);
     });
 
-    socket.on('user_typing', ({ conversationId, userId, userName }: any) => {
-      useChatStore.getState().setUserTyping(conversationId, userId, userName, true);
-    });
-
-    socket.on('user_stop_typing', ({ conversationId, userId }: any) => {
-      useChatStore.getState().setUserTyping(conversationId, userId, '', false);
-    });
-
-    // 3. WebRTC Signaling Listeners
-    socket.on('incoming_call', (data: any) => {
+    // 4. WebRTC Peer-to-Peer Video/Voice Call Listeners
+    socket.on('incoming_call', (data: { callId: string; caller: any; callType: 'audio' | 'video'; conversationId: string }) => {
+      console.log('[Socket.IO] Incoming WebRTC call:', data);
       useCallStore.getState().handleIncomingCall(data);
     });
 
-    socket.on('call_accepted', (data: any) => {
-      useCallStore.getState().handleCallAccepted(data);
+    socket.on('call_answered', (data: { callId: string; signalData: any }) => {
+      console.log('[Socket.IO] Call answered by peer:', data);
+      useCallStore.getState().handleCallAnswered(data);
     });
 
-    socket.on('ice_candidate', (data: any) => {
-      useCallStore.getState().handleIceCandidate(data.candidate);
+    socket.on('webrtc_signal', (data: { callId: string; signalData: any }) => {
+      useCallStore.getState().handleWebRTCSignal(data);
     });
 
-    socket.on('call_rejected', (data: any) => {
-      useCallStore.getState().handleCallRejected(data);
+    socket.on('call_rejected', () => {
+      useCallStore.getState().endCall();
     });
 
-    socket.on('call_ended', (data: any) => {
-      useCallStore.getState().handleCallEnded(data);
-    });
-
-    socket.on('peer_media_state_changed', (data: any) => {
-      useCallStore.getState().handlePeerMediaState(data);
-    });
-
-    // 4. Group Updates
-    socket.on('group_added', () => {
-      useChatStore.getState().fetchConversations();
-    });
-
-    socket.on('group_metadata_updated', ({ conversationId, updates }: any) => {
-      useChatStore.getState().handleGroupUpdated(conversationId, updates);
+    socket.on('call_ended', () => {
+      useCallStore.getState().endCall();
     });
   },
 
@@ -136,34 +117,16 @@ export const socketService = {
     if (socket) {
       socket.disconnect();
       socket = null;
+      useChatStore.getState().setIsConnected(false);
     }
   },
 
-  getSocket(): Socket | null {
-    return socket;
-  },
-
-  joinConversation(conversationId: string) {
+  emitJoinConversation(conversationId: string) {
     socket?.emit('join_conversation', conversationId);
   },
 
-  leaveConversation(conversationId: string) {
+  emitLeaveConversation(conversationId: string) {
     socket?.emit('leave_conversation', conversationId);
-  },
-
-  sendMessage(messageData: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (!socket?.connected) {
-        return reject(new Error('Socket not connected'));
-      }
-      socket.emit('send_message', messageData, (response: any) => {
-        if (response?.success) {
-          resolve(response.message);
-        } else {
-          reject(new Error(response?.error || 'Failed to send message'));
-        }
-      });
-    });
   },
 
   emitTyping(conversationId: string) {
@@ -174,63 +137,16 @@ export const socketService = {
     socket?.emit('stop_typing', { conversationId });
   },
 
-  emitRead(conversationId: string, messageIds?: string[]) {
-    socket?.emit('message_read', { conversationId, messageIds });
+  // WebRTC Signal Emitting
+  emitCallSignal(targetUserId: string, signalData: any, callId: string) {
+    socket?.emit('webrtc_signal', { targetUserId, signalData, callId });
   },
 
-  emitDelivered(messageId: string, conversationId: string) {
-    socket?.emit('message_delivered', { messageId, conversationId });
+  emitRejectCall(callerId: string, callId: string) {
+    socket?.emit('reject_call', { callerId, callId });
   },
 
-  editMessage(messageId: string, content: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      socket?.emit('edit_message', { messageId, content }, (res: any) => {
-        if (res?.success) resolve(res.message);
-        else reject(new Error(res?.error || 'Failed to edit message'));
-      });
-    });
-  },
-
-  deleteMessage(messageId: string, forEveryone: boolean): Promise<void> {
-    return new Promise((resolve, reject) => {
-      socket?.emit('delete_message', { messageId, forEveryone }, (res: any) => {
-        if (res?.success) resolve();
-        else reject(new Error(res?.error || 'Failed to delete message'));
-      });
-    });
-  },
-
-  toggleReaction(messageId: string, emoji: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      socket?.emit('toggle_reaction', { messageId, emoji }, (res: any) => {
-        if (res?.success) resolve(res.reactions);
-        else reject(new Error(res?.error || 'Failed to toggle reaction'));
-      });
-    });
-  },
-
-  // WebRTC Signaling Calls
-  callUser(data: { targetUserId: string; conversationId?: string; type: 'audio' | 'video'; offer: any }) {
-    socket?.emit('call_user', data);
-  },
-
-  answerCall(data: { callId: string; callerId: string; answer: any }) {
-    socket?.emit('answer_call', data);
-  },
-
-  sendIceCandidate(targetUserId: string, candidate: any) {
-    socket?.emit('ice_candidate', { targetUserId, candidate });
-  },
-
-  rejectCall(data: { callId: string; callerId: string; reason?: string }) {
-    socket?.emit('reject_call', data);
-  },
-
-  endCall(data: { callId?: string; targetUserId?: string }) {
-    socket?.emit('end_call', data);
-  },
-
-  toggleMediaState(data: { targetUserId: string; isMuted?: boolean; isVideoOff?: boolean; isScreenSharing?: boolean }) {
-    socket?.emit('toggle_media_state', data);
+  emitEndCall(peerUserId: string, callId: string) {
+    socket?.emit('end_call', { peerUserId, callId });
   },
 };

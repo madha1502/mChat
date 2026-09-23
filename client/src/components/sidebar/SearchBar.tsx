@@ -1,6 +1,6 @@
 import React from 'react';
 import { useChatStore } from '../../stores/chatStore';
-import { Search, X, Heart } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 export const SearchBar: React.FC = () => {
   const { searchQuery, setSearchQuery, filter, setFilter } = useChatStore();
@@ -13,7 +13,7 @@ export const SearchBar: React.FC = () => {
   ];
 
   return (
-    <div className="px-4 py-3 bg-white/70 backdrop-blur-md border-b border-pink-100/80 space-y-2.5">
+    <div className="px-4 py-3 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-pink-100/80 dark:border-slate-800 space-y-2.5 transition-colors">
       {/* Search Input Pill */}
       <div className="relative flex items-center">
         <Search className="absolute left-3.5 w-4 h-4 text-pink-400 pointer-events-none" />
@@ -21,13 +21,13 @@ export const SearchBar: React.FC = () => {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search chats, sweet messages..."
-          className="w-full pl-10 pr-9 py-2 bg-[#FFF0F5] text-xs font-medium text-slate-800 placeholder-pink-300 rounded-full border border-pink-200/80 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-200 transition-all"
+          placeholder="Search chats, messages..."
+          className="w-full pl-10 pr-9 py-2 bg-pink-50/60 dark:bg-slate-800/80 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder-pink-300 dark:placeholder-slate-500 rounded-full border border-pink-200/80 dark:border-slate-700 focus:outline-none focus:border-pink-400 focus:ring-2 focus:ring-pink-200 dark:focus:ring-purple-900 transition-all"
         />
         {searchQuery && (
           <button
             onClick={() => setSearchQuery('')}
-            className="absolute right-3 text-pink-400 hover:text-pink-600"
+            className="absolute right-3 text-pink-400 hover:text-pink-600 dark:hover:text-pink-300"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -44,8 +44,8 @@ export const SearchBar: React.FC = () => {
               onClick={() => setFilter(tab.id as any)}
               className={`px-3 py-1 text-[11px] font-bold rounded-full transition-all whitespace-nowrap ${
                 isActive
-                  ? 'bg-gradient-to-r from-[#FF758C] to-[#FF7EB3] text-white shadow-md shadow-pink-400/20'
-                  : 'bg-pink-50/80 text-pink-500 hover:bg-pink-100/80'
+                  ? '[background:var(--header-bg)] text-white shadow-md'
+                  : 'bg-pink-50/80 dark:bg-slate-800 text-pink-500 dark:text-slate-300 hover:bg-pink-100/80 dark:hover:bg-slate-700'
               }`}
             >
               {tab.label}
